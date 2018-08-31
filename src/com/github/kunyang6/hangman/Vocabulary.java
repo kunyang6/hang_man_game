@@ -7,6 +7,8 @@ package com.github.kunyang6.hangman;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,21 +22,17 @@ import java.util.Scanner;
  */
 public class Vocabulary {
     private ArrayList<Word> vocabulary = new ArrayList<>();
-    private String filePath;
-    private HashMap<String, Word> easyLevel = new HashMap<String, Word>();
-    private HashMap<String, Word> mediumLevel = new HashMap<String, Word>();
-    private HashMap<String, Word> hardLevel = new HashMap<String, Word>();
+    private ArrayList<Word> easyLevel = new ArrayList<Word>();
+    private ArrayList<Word> mediumLevel = new ArrayList<Word>();
+    private ArrayList<Word> hardLevel = new ArrayList<Word>();
     
-    public Vocabulary(String filePath) {
-        this.filePath = filePath;
+    public Vocabulary() throws IOException {
+        this.buildVocabulary();
     }
     
-    public void buildVocabulary() throws FileNotFoundException {
-        File file = new File(this.filePath);
-        if(!file.exists()) {
-            throw new FileNotFoundException(String.format("The File %s can not be found",this.filePath));
-        }
-        Scanner scanner = new Scanner(file);
+    public void buildVocabulary() throws IOException {
+        InputStream stream = Vocabulary.class.getResourceAsStream("WordBank.txt");
+        Scanner scanner = new Scanner(stream);
         scanner.useDelimiter("\\n");
         while(scanner.hasNext()) {
             Word word = new Word(scanner.next());
@@ -66,70 +64,69 @@ public class Vocabulary {
         assignDifficultyHelper(endOfMediumLevel, endOfVocabulary, Difficulty.HARD);
     }
     
+    /**
+     * 
+     * @param start: This is the start of either Easy, Medium, Hard Arraylist.
+     * @param end: This is the end of either Easy, Medium, Hard Arraylist.
+     * @param difficulty: This is the control of choosing the words' difficulty.
+     */
     private void assignDifficultyHelper(int start, int end, Difficulty difficulty) {
         for (int i = start; i < end; i++) {
             Word word = this.vocabulary.get(i);
             word.setDifficulty(difficulty);
             if(difficulty.equals(Difficulty.EASY)) {
-                easyLevel.put(word.getWord(), word);
+                easyLevel.add(word);
             } else if (difficulty.equals(Difficulty.MEDIUM)){
-                mediumLevel.put(word.getWord(), word);
+                mediumLevel.add(word);
             } else {
-                hardLevel.put(word.getWord(), word);
+                hardLevel.add(word);
             }
         }
     }
     
-    public HashMap<String,Word> getEasyLevel() {return this.easyLevel;}
+    public Word selectWord(Difficulty difficulty) {
+        int randomNumber;
+        Word word;
+        switch(difficulty) {
+            case MEDIUM:
+                randomNumber = (int)Math.random() * this.mediumLevel.size();
+                word = this.mediumLevel.get(randomNumber);
+                return word;
+            case EASY:
+                randomNumber = (int)Math.random() * this.easyLevel.size();
+                word = this.easyLevel.get(randomNumber);
+                return word;
+            case HARD:
+                randomNumber = (int)Math.random() * this.hardLevel.size();
+                word = this.hardLevel.get(randomNumber);
+                return word;
+        }
+        throw new IllegalArgumentException("Invalid difficulty");
+    }
     
-    public String getFilePath() {return this.filePath;}
+    public ArrayList<Word> getEasyLevel() {return this.easyLevel;}
     
-    public HashMap<String,Word> getHardLevel() {return this.hardLevel;}
+    public ArrayList<Word> getHardLevel() {return this.hardLevel;}
     
-    public HashMap<String,Word> getMediumLevel() {return this.mediumLevel;}
+    public ArrayList<Word> getMediumLevel() {return this.mediumLevel;}
     
     public ArrayList<Word> getVocabulary(){return this.vocabulary;}
     
     
     public static void main(String[] args) {
-        Vocabulary demo = new Vocabulary("C:\\Users\\vince\\Desktop\\SideProjects\\HangManGame\\lib\\usa.txt");
+        ArrayList<Word> easyLevel = new ArrayList<>();
         try{
-            demo.buildVocabulary();
-//            HashMap<String,Word> easyLevel = demo.getEasyLevel();
-//            Iterator iterator = easyLevel.entrySet().iterator();
-//            System.out.println("-----------------start of easy level-------------------------");
-//            while(iterator.hasNext()) {
-//                Map.Entry<String,Word> pair = (Map.Entry) iterator.next();
-//                Word word = pair.getValue();
-//                System.out.println(word.getWord());
-//                System.out.println(word.getDifficulty().toString());
-//            }
-//            System.out.println("---------------end of easy level----------------------------");
-//            
-//            HashMap<String,Word> mediumLevel = demo.getMediumLevel();
-//            Iterator iteratorMedium = mediumLevel.entrySet().iterator();
-//            System.out.println("----------------start of medium level------------------------");
-//            while(iteratorMedium.hasNext()) {
-//                Map.Entry<String,Word> pair = (Map.Entry) iteratorMedium.next();
-//                Word word = pair.getValue();
-//                System.out.println(word.getWord());
-//                System.out.println(word.getDifficulty().toString());
-//            }
-//            System.out.println("------------end of medium level-----------------------");
-//            
-            HashMap<String,Word> hardLevel = demo.getHardLevel();
-            System.out.println("-----------------start of hard level------------------");
-            Iterator iteratorHard = hardLevel.entrySet().iterator();
-            while(iteratorHard.hasNext()) {
-                Map.Entry<String,Word> pair = (Map.Entry) iteratorHard.next();
-                Word word = pair.getValue();
+            Vocabulary demo = new Vocabulary();
+            easyLevel = demo.getHardLevel();
+            for(Word word : easyLevel) {
                 System.out.println(word.getWord());
                 System.out.println(word.getDifficulty().toString());
             }
-            System.out.println("-------------end of hard level-----------------");
-        } catch(FileNotFoundException ex)
+        } catch(IOException ex)
         {
             ex.printStackTrace();
+        } finally {
+            easyLevel.clear();
         }
     }
 }

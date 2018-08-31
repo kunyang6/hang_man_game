@@ -5,37 +5,50 @@
  */
 package com.github.kunyang6.hangman;
 
-import java.awt.Dimension;
-import javax.swing.JFrame;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.util.Date;
 
 /**
  *
  * @author vince
  */
-public class Game {
-    public static void main(String[] args)
+public class Game implements DrawListener {
+    public static void main(String[]args) throws InterruptedException
     {
         Game game = new Game();
-        game.initWindow();
+        game.display = new Display(game, 1280, 720);
+        while (true)
+        {
+            game.display.requestRepaint();
+            Thread.sleep(50);
+        }
     }
     
-    private JFrame frame;
-    private Display display;
+    private String word = "coffee";
+    private boolean[] wordFound;
+    
+    protected Display display;
+    
+    private Font titleFont;
     
     public Game()
     {
-        
+        titleFont  = new Font("Arial", Font.PLAIN, 30);
     }
     
-    public void initWindow()
-    {
-        frame = new JFrame("Vinnie's Hangman");
-        display = new Display();
-        //display.setPreferredSize(new Dimension(640, 480));
-        display.setSize(640, 480);
-        frame.getContentPane().add(display);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.repaint();
+    public void paint(Graphics graphics) {
+         graphics.setColor(Color.BLACK);
+        graphics.fillRect(display.getOffsetX(), display.getOffsetY(), display.getDrawingWidth(), display.getDrawingHeight());
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(titleFont);
+        
+        
+        
+        for(int i = 0; i < word.length(); i++) {
+            graphics.drawString(word.substring(i, i+1), display.getOffsetX() + i*30, display.getOffsetY() + 30);
+        }
     }
+    
 }
