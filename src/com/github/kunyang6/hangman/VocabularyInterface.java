@@ -20,18 +20,18 @@ import java.util.Scanner;
  *
  * @author vince
  */
-public class Vocabulary {
+public class VocabularyInterface {
     private ArrayList<Word> vocabulary = new ArrayList<>();
     private ArrayList<Word> easyLevel = new ArrayList<Word>();
     private ArrayList<Word> mediumLevel = new ArrayList<Word>();
     private ArrayList<Word> hardLevel = new ArrayList<Word>();
     
-    public Vocabulary() throws IOException {
+    public VocabularyInterface() throws IOException {
         this.buildVocabulary();
     }
     
     public void buildVocabulary() throws IOException {
-        InputStream stream = Vocabulary.class.getResourceAsStream("WordBank.txt");
+        InputStream stream = VocabularyInterface.class.getResourceAsStream("WordBank.txt");
         Scanner scanner = new Scanner(stream);
         scanner.useDelimiter("\\n");
         while(scanner.hasNext()) {
@@ -89,15 +89,18 @@ public class Vocabulary {
         Word word;
         switch(difficulty) {
             case MEDIUM:
-                randomNumber = (int)Math.random() * this.mediumLevel.size();
+                randomNumber = (int)(Math.random() * this.mediumLevel.size());
                 word = this.mediumLevel.get(randomNumber);
+                System.out.println(String.format("Random number %d", randomNumber));
                 return word;
             case EASY:
-                randomNumber = (int)Math.random() * this.easyLevel.size();
+                randomNumber = (int)(Math.random() * this.easyLevel.size());
+                System.out.println(String.format("Random number %d", randomNumber));
                 word = this.easyLevel.get(randomNumber);
                 return word;
             case HARD:
-                randomNumber = (int)Math.random() * this.hardLevel.size();
+                randomNumber = (int)(Math.random() * this.hardLevel.size());
+                System.out.println(String.format("Random number %d", randomNumber));
                 word = this.hardLevel.get(randomNumber);
                 return word;
         }
@@ -116,7 +119,7 @@ public class Vocabulary {
     public static void main(String[] args) {
         ArrayList<Word> easyLevel = new ArrayList<>();
         try{
-            Vocabulary demo = new Vocabulary();
+            VocabularyInterface demo = new VocabularyInterface();
             easyLevel = demo.getHardLevel();
             for(Word word : easyLevel) {
                 System.out.println(word.getWord());
