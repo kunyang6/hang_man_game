@@ -111,7 +111,7 @@ public class HangMan {
      * < guessingLetter > utilizes user's input to return the guessing value. 
      * Method will be able to check user's ability to input correct guessing value.
      * @param sc: scanner obtians the input value.
-     * @return guessedLetter: storage for user input.
+     * @return guessedLetter: storage for user input.no
      */
     private String guessingLetter(Scanner sc) {
         String guessedLetter = "";
